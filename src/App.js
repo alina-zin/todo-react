@@ -1,23 +1,39 @@
-import logo from './logo.svg';
 import './App.css';
+import {useState, useEffect} from 'react';
+
+const URL = 'http://localhost/todo/retrieve.php';
 
 function App() {
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    let status = 0;
+    fetch(URL)
+    .then(res => {
+      status = parseInt(res.status);
+      return res.json()
+    })
+    .then(
+      (res) => {
+        if (status === 200) {
+          setTasks(res);
+        } else {
+          alert(res.error);
+        }
+      }, (error) => {
+        alert(error);
+      }
+    )
+  }, [])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container">
+      <h3>Todo list</h3>
+      <ol>
+        {tasks.map(task => (
+          <li key={task.id}>{task.description}</li>
+        ))}
+      </ol>
     </div>
   );
 }
